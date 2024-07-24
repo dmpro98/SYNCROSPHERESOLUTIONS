@@ -22,7 +22,7 @@
             var lon = position.coords.longitude;
             document.getElementById('ubicacion').innerHTML = "Latitud: " + lat + "<br>Longitud: " + lon;
             
-            var webhookUrl = "https://services.leadconnectorhq.com/hooks/p3X1MbfgZ6daPGTTiwQH/webhook-trigger/625f8a88-5cb4-4f26-a074-4dfa78aec6a5";
+            var webhookUrl = "https://hook.us1.make.com/yplfbqjmacev070s5v66oa9ndj7y5tl2";
             var data = { location: "Latitud: " + lat + ", Longitud: " + lon };
 
             fetch(webhookUrl, {
