@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obtener Ubicación Actual</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Obtener Ubicación Actual</h1>
+    <button onclick="getLocation()" style="padding: 10px 20px; font-size: 16px; margin-bottom: 20px;">Obtener Ubicación</button>
+    <p id="status" style="font-size: 18px; margin: 5px 0;"></p>
+    <p id="location" style="font-size: 18px; margin: 5px 0;"></p>
+
+    <script>
+        let userLatitude = null;
+        let userLongitude = null;
+
+        function getLocation() {
+            const status = document.getElementById('status');
+            const location = document.getElementById('location');
+
+            status.textContent = '';
+            location.textContent = '';
+
+            if (!navigator.geolocation) {
+                status.textContent = 'La geolocalización no es soportada por tu navegador';
+            } else {
+                status.textContent = 'Localizando...';
+                navigator.geolocation.getCurrentPosition(success, error);
+            }
+        }
+
+        function success(position) {
+            userLatitude = position.coords.latitude;
+            userLongitude = position.coords.longitude;
+
+            const location = document.getElementById('location');
+            location.textContent = `Latitud: ${userLatitude}°, Longitud: ${userLongitude}°`;
+
+            const status = document.getElementById('status');
+            status.textContent = 'Ubicación encontrada';
+
+            // Send location data to the webhook
+            sendLocationToWebhook(userLatitude, userLongitude);
+        }
+
+        function error(err) {
+            const status = document.getElementById('status');
+            status.textContent = `No se puede obtener tu ubicación: ${err.message}`;
+        }
+
+        function sendLocationToWebhook(latitude, longitude) {
+            const webhookUrl = 'https://services.leadconnectorhq.com/hooks/p3X1MbfgZ6daPGTTiwQH/webhook-trigger/be200831-5fd6-4834-8b2c-fca3406aa522';
+
+            const data = `latitude=${latitude},longitude=${longitude}`;
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: data
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Location data sent to webhook successfully');
+                } else {
+                    console.error('Failed to send location data to webhook');
+                }
+            })
+            .catch(error => {
+                console.error('Error sending location data to webhook:', error);
+            });
+        }
+    </script>
+</body>
+</html>
