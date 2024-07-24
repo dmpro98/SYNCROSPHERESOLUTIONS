@@ -11,7 +11,7 @@
     <script>
         function obtenerUbicacion() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(mostrarPosicion);
+                navigator.geolocation.getCurrentPosition(mostrarPosicion, mostrarError);
             } else {
                 document.getElementById('ubicacion').innerHTML = "La geolocalización no es soportada por este navegador.";
             }
@@ -21,9 +21,11 @@
             var lat = position.coords.latitude;
             var lon = position.coords.longitude;
             document.getElementById('ubicacion').innerHTML = "Latitud: " + lat + "<br>Longitud: " + lon;
-            
+
             var webhookUrl = "https://hook.us1.make.com/yplfbqjmacev070s5v66oa9ndj7y5tl2";
-            var data = { location: "Latitud: " + lat + ", Longitud: " + lon };
+            var data = {
+                location: lat + "," + lon
+            };
 
             fetch(webhookUrl, {
                 method: 'POST',
@@ -32,13 +34,36 @@
                 },
                 body: JSON.stringify(data),
             })
-            .then(response => response.text())
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Network response was not ok.');
+                }
+            })
             .then(data => {
                 console.log('Success:', data);
             })
             .catch((error) => {
                 console.error('Error:', error);
             });
+        }
+
+        function mostrarError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById('ubicacion').innerHTML = "El usuario denegó la solicitud de geolocalización."
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById('ubicacion').innerHTML = "La información de ubicación no está disponible."
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById('ubicacion').innerHTML = "La solicitud para obtener la ubicación ha caducado."
+                    break;
+                case error.UNKNOWN_ERROR:
+                    document.getElementById('ubicacion').innerHTML = "Ha ocurrido un error desconocido."
+                    break;
+            }
         }
     </script>
 </body>
