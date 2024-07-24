@@ -11,7 +11,11 @@
     <script>
         function obtenerUbicacion() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(mostrarPosicion, mostrarError, { enableHighAccuracy: true, timeout: 50000, maximumAge: 0 });
+                navigator.geolocation.getCurrentPosition(mostrarPosicion, mostrarError, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
             } else {
                 document.getElementById('ubicacion').innerHTML = "La geolocalización no es soportada por este navegador.";
             }
@@ -50,20 +54,23 @@
         }
 
         function mostrarError(error) {
+            var mensajeError = "";
             switch(error.code) {
                 case error.PERMISSION_DENIED:
-                    document.getElementById('ubicacion').innerHTML = "El usuario denegó la solicitud de geolocalización.";
+                    mensajeError = "El usuario denegó la solicitud de geolocalización.";
                     break;
                 case error.POSITION_UNAVAILABLE:
-                    document.getElementById('ubicacion').innerHTML = "La información de ubicación no está disponible.";
+                    mensajeError = "La información de ubicación no está disponible.";
                     break;
                 case error.TIMEOUT:
-                    document.getElementById('ubicacion').innerHTML = "La solicitud para obtener la ubicación ha caducado.";
+                    mensajeError = "La solicitud para obtener la ubicación ha caducado.";
                     break;
                 case error.UNKNOWN_ERROR:
-                    document.getElementById('ubicacion').innerHTML = "Ha ocurrido un error desconocido.";
+                    mensajeError = "Ha ocurrido un error desconocido.";
                     break;
             }
+            document.getElementById('ubicacion').innerHTML = mensajeError;
+            console.error('Geolocation error:', error);
         }
     </script>
 </body>
