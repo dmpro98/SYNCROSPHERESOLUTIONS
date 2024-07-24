@@ -2,7 +2,7 @@ function obtenerUbicacion() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(mostrarPosicion, mostrarError, {
             enableHighAccuracy: true,
-            timeout: 5000,
+            timeout: 50000,
             maximumAge: 0
         });
     } else {
